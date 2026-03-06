@@ -1,13 +1,1121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>grevia</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grevia — Go Sustainable, Grow Smarter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --forest:   #1a2e1a;
+      --moss:     #2d4a2d;
+      --fern:     #4a7c59;
+      --sage:     #8aab8a;
+      --cream:    #f5f0e8;
+      --parchment:#ede6d6;
+      --amber:    #c8893a;
+      --charcoal: #1c1c1c;
+      --white:    #fdfcfa;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--forest);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--fern);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, background 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--fern);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.35s ease;
+      opacity: 0.6;
+    }
+    body:hover .cursor { transform: translate(-50%,-50%) scale(1); }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9990;
+      opacity: 0.4;
+    }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 24px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      mix-blend-mode: multiply;
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--forest);
+      text-decoration: none;
+    }
+    .logo span { color: var(--fern); font-style: italic; }
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+      font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .nav-links a {
+      color: var(--forest); text-decoration: none;
+      opacity: 0.7; transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta {
+      background: var(--forest);
+      color: var(--cream) !important;
+      opacity: 1 !important;
+      padding: 10px 22px;
+      border-radius: 2px;
+      font-size: 12px !important;
+      letter-spacing: 0.12em !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--fern) !important; }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      padding: 160px 48px 80px 72px;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; z-index: 2;
+    }
+
+    .hero-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--fern);
+      margin-bottom: 32px;
+      display: flex; align-items: center; gap: 12px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    .hero-tag::before {
+      content: '';
+      display: block; width: 40px; height: 1px;
+      background: var(--fern);
+    }
+
+    .hero-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(62px, 7vw, 100px);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--forest);
+      margin-bottom: 32px;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--fern);
+    }
+    .hero-headline .line1 {
+      display: block;
+      opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards;
+    }
+    .hero-headline .line2 {
+      display: block;
+      opacity: 0; animation: fadeUp 0.9s ease 0.55s forwards;
+    }
+    .hero-headline .line3 {
+      display: block;
+      opacity: 0; animation: fadeUp 0.9s ease 0.7s forwards;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--moss);
+      max-width: 420px;
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.9s forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 16px; align-items: center;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 1.05s forwards;
+    }
+    .btn-primary {
+      background: var(--forest);
+      color: var(--cream);
+      padding: 16px 36px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none; border-radius: 2px;
+      cursor: none;
+      text-decoration: none;
+      transition: background 0.25s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-primary:hover { background: var(--fern); transform: translateY(-2px); }
+    .btn-primary .arrow { font-size: 18px; transition: transform 0.2s; }
+    .btn-primary:hover .arrow { transform: translateX(4px); }
+
+    .btn-ghost {
+      color: var(--forest);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      opacity: 0.65;
+      transition: opacity 0.2s;
+    }
+    .btn-ghost:hover { opacity: 1; }
+
+    .hero-stats {
+      display: flex; gap: 40px; margin-top: 72px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 1.2s forwards;
+    }
+    .stat-item { display: flex; flex-direction: column; gap: 4px; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 600;
+      color: var(--forest);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--sage);
+    }
+
+    /* Hero Right — visual */
+    .hero-right {
+      background: var(--forest);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-right::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 60%, rgba(74,124,89,0.4) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(200,137,58,0.15) 0%, transparent 50%);
+    }
+
+    /* Floating botanical shapes */
+    .botanical {
+      position: absolute;
+      opacity: 0.12;
+    }
+    .botanical svg { fill: var(--sage); }
+
+    .bot-1 { top: 10%; left: 10%; width: 300px; animation: floatA 8s ease-in-out infinite; }
+    .bot-2 { bottom: 15%; right: 5%; width: 220px; animation: floatB 10s ease-in-out infinite; }
+    .bot-3 { top: 45%; left: 40%; width: 160px; animation: floatA 12s ease-in-out infinite reverse; }
+
+    @keyframes floatA {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(3deg); }
+    }
+    @keyframes floatB {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(15px) rotate(-2deg); }
+    }
+
+    /* Score card floating */
+    .score-card {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(245, 240, 232, 0.08);
+      border: 1px solid rgba(138,171,138,0.3);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 40px;
+      width: 280px;
+      animation: fadeUp 1s ease 1s forwards, float 6s ease-in-out 2s infinite;
+      opacity: 0;
+    }
+    @keyframes float {
+      0%,100% { transform: translate(-50%,-50%) translateY(0); }
+      50% { transform: translate(-50%,-50%) translateY(-12px); }
+    }
+
+    .score-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 20px;
+    }
+    .score-ring {
+      width: 130px; height: 130px;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring .track {
+      fill: none; stroke: rgba(138,171,138,0.2); stroke-width: 8;
+    }
+    .score-ring .fill {
+      fill: none;
+      stroke: url(#greenGrad);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 345;
+      stroke-dashoffset: 345;
+      animation: drawCircle 2s ease 1.5s forwards;
+    }
+    @keyframes drawCircle {
+      to { stroke-dashoffset: 86; } /* 75% */
+    }
+    .score-num {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px; font-weight: 600;
+      color: var(--cream);
+    }
+    .score-num span { font-size: 18px; color: var(--sage); }
+    .score-breakdown {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .score-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .score-row-label {
+      font-size: 11px; color: rgba(245,240,232,0.6);
+      letter-spacing: 0.05em; flex: 1;
+    }
+    .score-bar {
+      flex: 2; height: 3px;
+      background: rgba(138,171,138,0.15);
+      border-radius: 2px; overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%; background: var(--sage);
+      border-radius: 2px;
+      animation: barGrow 1.5s ease 2s both;
+    }
+    @keyframes barGrow { from { width: 0 !important; } }
+    .score-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--sage);
+    }
+
+    /* Floating badge */
+    .badge-card {
+      position: absolute;
+      bottom: 18%; left: 8%;
+      background: var(--amber);
+      color: var(--white);
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      animation: fadeUp 0.8s ease 1.8s both, floatB 7s ease-in-out 3s infinite;
+      opacity: 0;
+      max-width: 180px;
+    }
+    .badge-card strong { display: block; font-size: 18px; margin-bottom: 2px; }
+
+    .insight-card {
+      position: absolute;
+      top: 12%; right: 8%;
+      background: rgba(245,240,232,0.06);
+      border: 1px solid rgba(138,171,138,0.25);
+      border-radius: 8px;
+      padding: 16px 18px;
+      font-size: 12px;
+      color: rgba(245,240,232,0.75);
+      max-width: 190px;
+      line-height: 1.6;
+      animation: fadeUp 0.8s ease 2.1s both, floatA 9s ease-in-out 3s infinite;
+      opacity: 0;
+    }
+    .insight-card .insight-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--fern);
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-strip {
+      background: var(--forest);
+      padding: 18px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-inner {
+      display: inline-flex; gap: 60px;
+      animation: marquee 20s linear infinite;
+    }
+    .marquee-inner span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-style: italic;
+      color: var(--sage);
+      letter-spacing: 0.03em;
+    }
+    .marquee-inner .dot {
+      color: var(--amber);
+      font-style: normal;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .section { padding: 120px 72px; }
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--fern);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-tag::before {
+      content: ''; display: block;
+      width: 30px; height: 1px; background: var(--fern);
+    }
+
+    .hiw-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .hiw-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 5vw, 72px);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--forest);
+    }
+    .hiw-headline em { font-style: italic; color: var(--fern); }
+
+    .steps {
+      display: flex; flex-direction: column; gap: 40px;
+      padding-top: 10px;
+    }
+    .step {
+      display: flex; gap: 24px; align-items: flex-start;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .step.visible { opacity: 1; transform: translateX(0); }
+
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px; font-weight: 300;
+      color: var(--parchment);
+      line-height: 1;
+      min-width: 50px;
+    }
+    .step-content h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+    .step-content p {
+      font-size: 14px; line-height: 1.75;
+      color: var(--moss); opacity: 0.8;
+    }
+
+    /* ===== FEATURES ===== */
+    .features-section {
+      background: var(--forest);
+      padding: 120px 72px;
+    }
+    .features-section .section-tag { color: var(--sage); }
+    .features-section .section-tag::before { background: var(--sage); }
+
+    .features-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 5vw, 68px);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.05;
+      margin-bottom: 72px;
+      max-width: 600px;
+    }
+    .features-headline em { font-style: italic; color: var(--sage); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .feature-card {
+      background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(138,171,138,0.12);
+      padding: 48px 36px;
+      transition: background 0.3s, transform 0.3s;
+      cursor: none;
+    }
+    .feature-card:hover {
+      background: rgba(74,124,89,0.15);
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      font-size: 36px; margin-bottom: 24px;
+      display: block;
+    }
+    .feature-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 14px;
+    }
+    .feature-card p {
+      font-size: 14px; line-height: 1.75;
+      color: rgba(245,240,232,0.55);
+    }
+    .feature-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 24px;
+      font-size: 12px; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--sage);
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+    .feature-link:hover { gap: 10px; }
+
+    /* ===== IMPACT ===== */
+    .impact-section {
+      padding: 120px 72px;
+      background: var(--parchment);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+    .impact-numbers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+    .impact-num-card {
+      background: var(--cream);
+      padding: 40px 32px;
+      border: 1px solid rgba(26,46,26,0.08);
+    }
+    .impact-num-card:first-child {
+      grid-column: span 2;
+      background: var(--forest);
+      color: var(--cream);
+    }
+    .impact-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 64px; font-weight: 300;
+      line-height: 1;
+      color: inherit;
+    }
+    .impact-num-card:not(:first-child) .impact-big { color: var(--forest); }
+    .impact-unit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-style: italic;
+      color: var(--sage);
+    }
+    .impact-desc {
+      font-size: 13px; letter-spacing: 0.05em;
+      color: rgba(26,46,26,0.6); margin-top: 8px;
+    }
+    .impact-num-card:first-child .impact-desc { color: rgba(245,240,232,0.6); }
+
+    .impact-text .section-tag { margin-bottom: 24px; }
+    .impact-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(40px, 4.5vw, 62px);
+      font-weight: 300;
+      color: var(--forest);
+      line-height: 1.05;
+      margin-bottom: 24px;
+    }
+    .impact-headline em { font-style: italic; color: var(--fern); }
+    .impact-body {
+      font-size: 15px; line-height: 1.8;
+      color: var(--moss); opacity: 0.8;
+      margin-bottom: 36px;
+    }
+
+    /* ===== TESTIMONIAL ===== */
+    .testimonial-section {
+      padding: 100px 72px;
+      background: var(--forest);
+      text-align: center;
+    }
+    .testimonial-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 1.3;
+      max-width: 800px;
+      margin: 0 auto 32px;
+    }
+    .testimonial-quote em { color: var(--sage); font-style: normal; }
+    .testimonial-author {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage);
+    }
+    .divider-leaf {
+      font-size: 24px; display: block; margin-bottom: 32px;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      padding: 140px 72px;
+      background: var(--cream);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: 'GREVIA';
+      position: absolute;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(120px, 20vw, 260px);
+      font-weight: 600;
+      color: rgba(26,46,26,0.04);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      letter-spacing: -0.05em;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .cta-tag { justify-content: center; margin-bottom: 24px; }
+    .cta-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 6vw, 88px);
+      font-weight: 300;
+      color: var(--forest);
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    .cta-headline em { font-style: italic; color: var(--fern); }
+    .cta-sub {
+      font-size: 16px; color: var(--moss);
+      opacity: 0.7; margin-bottom: 48px;
+      max-width: 480px; margin-left: auto; margin-right: auto;
+      line-height: 1.7;
+    }
+    .cta-actions {
+      display: flex; gap: 16px; justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-large {
+      padding: 20px 48px;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--charcoal);
+      padding: 60px 72px 40px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+    }
+    .footer-brand .logo { font-size: 24px; display: block; margin-bottom: 16px; }
+    .footer-brand p {
+      font-size: 13px; line-height: 1.7;
+      color: rgba(245,240,232,0.4); max-width: 260px;
+    }
+    .footer-col h4 {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block; color: rgba(245,240,232,0.5);
+      text-decoration: none; font-size: 13px;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom {
+      background: var(--charcoal);
+      padding: 20px 72px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: rgba(245,240,232,0.3);
+      letter-spacing: 0.06em;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { height: 50vh; }
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .hero-left { padding: 120px 24px 60px; }
+      .section { padding: 80px 24px; }
+      .hiw-grid { grid-template-columns: 1fr; gap: 40px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .impact-section { grid-template-columns: 1fr; padding: 80px 24px; }
+      .features-section { padding: 80px 24px; }
+      .cta-section { padding: 100px 24px; }
+      footer { grid-template-columns: 1fr 1fr; gap: 40px; padding: 60px 24px 40px; }
+      .footer-bottom { padding: 20px 24px; flex-direction: column; gap: 8px; }
+      .testimonial-section { padding: 80px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo">Gre<span>via</span></a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#impact">Impact</a></li>
+      <li><a href="#" class="nav-cta">Get Started</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">AI-powered sustainability advisor</div>
+      <h1 class="hero-headline">
+        <span class="line1">Go</span>
+        <span class="line2"><em>sustainable.</em></span>
+        <span class="line3">Grow smarter.</span>
+      </h1>
+      <p class="hero-sub">
+        Grevia helps small businesses and startups make sustainable choices that create real impact — with AI guidance tailored to your business, budget, and goals.
+      </p>
+      <div class="hero-actions">
+        <a href="#" class="btn-primary">
+          Start for free <span class="arrow">→</span>
+        </a>
+        <a href="#how" class="btn-ghost">
+          See how it works ↓
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">2.4T</span>
+          <span class="stat-label">CO₂ reduction potential</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">40%</span>
+          <span class="stat-label">Average cost savings</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">10K+</span>
+          <span class="stat-label">Businesses guided</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <!-- Gradient defs -->
+      <svg width="0" height="0" style="position:absolute">
+        <defs>
+          <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#4a7c59"/>
+            <stop offset="100%" style="stop-color:#8aab8a"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Botanical BG shapes -->
+      <div class="botanical bot-1">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="150" cy="80" rx="60" ry="140" transform="rotate(-20 150 150)"/>
+          <ellipse cx="150" cy="220" rx="50" ry="120" transform="rotate(20 150 150)"/>
+          <line x1="150" y1="20" x2="150" y2="280" stroke="#8aab8a" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+      <div class="botanical bot-2">
+        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="110" cy="60" rx="45" ry="100" transform="rotate(-30 110 110)"/>
+          <ellipse cx="110" cy="160" rx="40" ry="90" transform="rotate(30 110 110)"/>
+        </svg>
+      </div>
+      <div class="botanical bot-3">
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="#8aab8a" stroke-width="2"/>
+          <circle cx="80" cy="80" r="45" fill="none" stroke="#8aab8a" stroke-width="1"/>
+        </svg>
+      </div>
+
+      <!-- Score card -->
+      <div class="score-card">
+        <div class="score-label">Your sustainability score</div>
+        <div class="score-ring">
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle class="track" cx="65" cy="65" r="55"/>
+            <circle class="fill" cx="65" cy="65" r="55"/>
+          </svg>
+          <div class="score-num">75<span>/100</span></div>
+        </div>
+        <div class="score-breakdown">
+          <div class="score-row">
+            <span class="score-row-label">Energy</span>
+            <div class="score-bar"><div class="score-bar-fill" style="width:80%"></div></div>
+            <span class="score-val">80</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label">Packaging</span>
+            <div class="score-bar"><div class="score-bar-fill" style="width:65%"></div></div>
+            <span class="score-val">65</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label">Supply chain</span>
+            <div class="score-bar"><div class="score-bar-fill" style="width:70%"></div></div>
+            <span class="score-val">70</span>
+          </div>
+          <div class="score-row">
+            <span class="score-row-label">Waste</span>
+            <div class="score-bar"><div class="score-bar-fill" style="width:88%"></div></div>
+            <span class="score-val">88</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating insight -->
+      <div class="insight-card">
+        <span class="insight-dot"></span>
+        Switching to renewable energy could boost your score by <strong>+12 pts</strong> this quarter
+      </div>
+
+      <!-- Floating badge -->
+      <div class="badge-card">
+        <strong>🌱 110 trees</strong>
+        saved this year by businesses like yours
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-inner">
+      <span>AI Sustainability Advisor</span><span class="dot">✦</span>
+      <span>Green Business Roadmap</span><span class="dot">✦</span>
+      <span>Carbon Footprint Tracker</span><span class="dot">✦</span>
+      <span>Eco-Swap Recommendations</span><span class="dot">✦</span>
+      <span>Impact Visualizer</span><span class="dot">✦</span>
+      <span>Sustainability Score</span><span class="dot">✦</span>
+      <!-- duplicate for seamless loop -->
+      <span>AI Sustainability Advisor</span><span class="dot">✦</span>
+      <span>Green Business Roadmap</span><span class="dot">✦</span>
+      <span>Carbon Footprint Tracker</span><span class="dot">✦</span>
+      <span>Eco-Swap Recommendations</span><span class="dot">✦</span>
+      <span>Impact Visualizer</span><span class="dot">✦</span>
+      <span>Sustainability Score</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="hiw-grid">
+      <div>
+        <div class="section-tag">How it works</div>
+        <h2 class="hiw-headline">
+          Sustainable growth,<br>
+          <em>made simple</em><br>
+          for every business
+        </h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <div class="step-content">
+            <h3>Tell us about your business</h3>
+            <p>Answer a few quick questions about your industry, size, operations, and current practices. No jargon, no complexity — just a conversation.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <div class="step-content">
+            <h3>Get your Sustainability Score</h3>
+            <p>Grevia's AI evaluates your business across energy, packaging, supply chain, and waste — then gives you an instant, honest score with clear breakdown.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <div class="step-content">
+            <h3>Receive your Green Roadmap</h3>
+            <p>A personalized 30/60/90-day action plan with specific, affordable steps tailored to your budget and goals — not generic advice.</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num">04</span>
+          <div class="step-content">
+            <h3>Track your real-world impact</h3>
+            <p>Watch your score improve, see CO₂ savings in real numbers, and share your sustainability story with customers who care.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section" id="features">
+    <div class="section-tag">Features</div>
+    <h2 class="features-headline">
+      Everything a small business needs to<br>
+      <em>lead the green transition</em>
+    </h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🤖</span>
+        <h3>AI Sustainability Advisor</h3>
+        <p>Chat naturally with Grevia's AI. Describe your challenges, ask questions, and get expert guidance — like having a sustainability consultant on call, 24/7.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3>Sustainability Score Dashboard</h3>
+        <p>A living score across 8 dimensions of your business. See exactly what's dragging your score down and what you can fix first for maximum impact.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🗺️</span>
+        <h3>Green Action Roadmap</h3>
+        <p>Your 30/60/90 day plan to sustainability. Prioritized by cost, effort, and impact. Built around your real constraints — not a one-size-fits-all checklist.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">♻️</span>
+        <h3>Eco-Swap Recommendations</h3>
+        <p>Using plastic packaging? Fossil-fuel vendors? Grevia finds greener alternatives matched to your location, scale, and budget — with cost comparisons.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🌍</span>
+        <h3>Impact Visualizer</h3>
+        <p>Turn dry numbers into emotional stories. See your actions translated into trees planted, flights avoided, and tonnes of CO₂ kept out of the atmosphere.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📣</span>
+        <h3>Shareable Green Report</h3>
+        <p>Generate a beautiful, one-page sustainability report to share with customers, investors, and partners — building trust through radical transparency.</p>
+        <a href="#" class="feature-link">Explore →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section class="impact-section" id="impact">
+    <div class="impact-numbers">
+      <div class="impact-num-card">
+        <div class="impact-big">2.4 <span class="impact-unit">billion tonnes</span></div>
+        <div class="impact-desc">CO₂ reduction potential if all SMBs went sustainable</div>
+      </div>
+      <div class="impact-num-card">
+        <div class="impact-big">40<span class="impact-unit">%</span></div>
+        <div class="impact-desc">Average operational cost reduction through green practices</div>
+      </div>
+      <div class="impact-num-card">
+        <div class="impact-big">3×</div>
+        <div class="impact-desc">More likely to attract investors with ESG credentials</div>
+      </div>
+    </div>
+    <div class="impact-text">
+      <div class="section-tag">Why it matters</div>
+      <h2 class="impact-headline">
+        Small businesses are the<br>
+        <em>world's biggest</em><br>
+        climate lever
+      </h2>
+      <p class="impact-body">
+        SMBs account for over 70% of global carbon emissions — yet most lack the resources, expertise, or guidance to change. Grevia makes sustainability accessible, affordable, and actually achievable for every business, at any stage.
+      </p>
+      <a href="#" class="btn-primary">
+        Calculate your impact <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="section-tag cta-tag">Ready to start?</div>
+    <h2 class="cta-headline">
+      Your sustainable<br>
+      future starts<br>
+      <em>today.</em>
+    </h2>
+    <p class="cta-sub">
+      Join thousands of small businesses using Grevia to grow smarter, cut costs, and actually make a difference — for free.
+    </p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary btn-large">
+        Get started free <span class="arrow">→</span>
+      </a>
+      <a href="#" class="btn-ghost">View on GitHub ↗</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <a href="#" class="logo" style="color:var(--cream)">Gre<span style="color:var(--sage);font-style:italic">via</span></a>
+      <p>AI-powered sustainability advisor for small businesses and startups. Open source, free to use, built for impact.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#">AI Advisor</a>
+      <a href="#">Score Dashboard</a>
+      <a href="#">Green Roadmap</a>
+      <a href="#">Eco-Swaps</a>
+      <a href="#">Impact Tracker</a>
+    </div>
+    <div class="footer-col">
+      <h4>Open Source</h4>
+      <a href="#">GitHub →</a>
+      <a href="#">Contributing</a>
+      <a href="#">Documentation</a>
+      <a href="#">Changelog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Vision</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <span>© 2026 Grevia. MIT License. Open Source.</span>
+    <span>Made with 🌿 for a sustainable future</span>
+  </div>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animateCursor() {
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+        ring.style.transform = 'translate(-50%,-50%) scale(0.5)';
+        ring.style.opacity = '0.2';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.opacity = '0.6';
+      });
+    });
+
+    // Scroll reveal for steps
+    const steps = document.querySelectorAll('.step');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 150);
+        }
+      });
+    }, { threshold: 0.2 });
+    steps.forEach(s => obs.observe(s));
+
+    // Counter animation
+    function animateCounter(el, target, suffix='') {
+      let start = 0;
+      const duration = 2000;
+      const step = timestamp => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const val = Math.floor(progress * target);
+        el.textContent = val + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    const statObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const nums = document.querySelectorAll('.stat-num');
+          // Just animate the ones that are plain numbers
+          statObs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) statObs.observe(statsEl);
+  </script>
+</body>
 </html>
